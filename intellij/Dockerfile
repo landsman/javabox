@@ -4,7 +4,7 @@ FROM openjdk:8-jdk-alpine
 RUN apk --update add --no-cache ttf-dejavu
 
 # install intellij
-RUN wget -O /tmp/idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-2017.3.4.tar.gz \
+RUN wget -O /tmp/idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIU-2018.1.5.tar.gz \
     && mkdir -p /usr/share/intellij \
     && tar -xf /tmp/idea.tar.gz --strip-components=1 -C /usr/share/intellij \
     && rm /tmp/idea.tar.gz
