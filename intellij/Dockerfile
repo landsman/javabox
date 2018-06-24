@@ -8,3 +8,6 @@ RUN wget -O /tmp/idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIU-2018.
     && mkdir -p /usr/share/intellij \
     && tar -xf /tmp/idea.tar.gz --strip-components=1 -C /usr/share/intellij \
     && rm /tmp/idea.tar.gz
+
+# install git
+RUN apt-get -y install git python3 python3-pip locales
