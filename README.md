@@ -4,9 +4,9 @@
 ## Start IDE
 
 ```
-xhost +
-docker-compose up
+sh start.sh
 ```
 
 ## Notes
+- you must have docker, docker-compose
 - tested on Ubuntu 18.04
