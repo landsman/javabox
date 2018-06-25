@@ -18,10 +18,11 @@ ENV MAVEN_VERSION 3.5.3
 ENV MAVEN_HOME /usr/lib/mvn
 ENV PATH $MAVEN_HOME/bin:$PATH
 
-# wget, bash, git
+# wget, bash, git, vim
 RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
     apk add --no-cache bash && \
-    apk add --no-cache git
+    apk add --no-cache git && \
+    apk add --no-cache vim
 
 # scala
 RUN cd "/tmp" && \ 

@@ -9,6 +9,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ~/.ssh:/root/.ssh
+      - ~/.gitconfig:/root/.gitconfig
       - ./config:$APP_ROOT/config
       - ./src:$APP_ROOT/src
       - idea_cache:/root/.IdeaIC2018.5
