@@ -36,24 +36,27 @@ RUN cd "/tmp" && \
     scalac -version
     
 # sbt
-RUN wget "http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz" && \
-    tar xzf "sbt-${SBT_VERSION}.tgz" && \
+RUN cd "/tmp" && \ 
+    wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
+    tar xzf sbt.tgz && \
     mkdir "${SBT_HOME}" && \
-    mv "/tmp/sbt" "${SBT_HOME}" && \
+    mv sbt "${SBT_HOME}" && \
     ln -s "${SBT_HOME}/bin/"* "/usr/bin/" && \
     sbt sbt-version || sbt sbtVersion || true
 
 # maven
-RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz && \
-  tar -zxvf apache-maven-$MAVEN_VERSION-bin.tar.gz && \
-  rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
-  mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
+RUN cd "/tmp" && \
+    wget -O maven.tar.gz http://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+  tar -zxvf maven.tar.gz && \
+  rm maven.tar.gz && \
+  mv apache-maven-${MAVEN_VERSION} /usr/lib/mvn
 
 # install intellij IDEA CE
-RUN wget -O /tmp/idea.tar.gz https://download-cf.jetbrains.com/idea/ideaC-${IDEA_VERSION}.tar.gz \
+RUN cd "/tmp" && \ 
+    wget -O idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz \
     && mkdir -p /usr/share/intellij \
-    && tar -xf /tmp/idea.tar.gz --strip-components=1 -C /usr/share/intellij
+    && tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
 
 # clean up
-RUN apk del .build-dependencies && \
-    rm -rf "/tmp/"*
+#RUN apk del .build-dependencies && \
+#    rm -rf "/tmp/"*
