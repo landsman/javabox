@@ -25,7 +25,7 @@ RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
     apk add --no-cache vim
 
 # scala
-RUN cd "/tmp" && \ 
+RUN cd "/tmp" && \
     wget "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" && \
     tar xzf "scala-${SCALA_VERSION}.tgz" && \
     mkdir "${SCALA_HOME}" && \
@@ -34,9 +34,9 @@ RUN cd "/tmp" && \
     ln -s "${SCALA_HOME}/bin/"* "/usr/bin/" && \
     scala -version && \
     scalac -version
-    
+
 # sbt
-RUN cd "/tmp" && \ 
+RUN cd "/tmp" && \
     wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
     tar xzf sbt.tgz && \
     mkdir "${SBT_HOME}" && \
@@ -47,15 +47,15 @@ RUN cd "/tmp" && \
 # maven
 RUN cd "/tmp" && \
     wget -O maven.tar.gz http://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
-  tar -zxvf maven.tar.gz && \
-  rm maven.tar.gz && \
-  mv apache-maven-${MAVEN_VERSION} /usr/lib/mvn
+    tar -zxvf maven.tar.gz && \
+    rm maven.tar.gz && \
+    mv apache-maven-${MAVEN_VERSION} /usr/lib/mvn
 
 # install intellij IDEA CE
-RUN cd "/tmp" && \ 
-    wget -O idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz \
-    && mkdir -p /usr/share/intellij \
-    && tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
+RUN cd "/tmp" && \
+    wget -O idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz && \
+    mkdir -p /usr/share/intellij && \
+    tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
 
 # clean up
 #RUN apk del .build-dependencies && \

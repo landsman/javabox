@@ -1,5 +1,6 @@
 # Don't read me
 
+![preview](./doc/IntelliJ.png "Preview")
 
 ## Start IDE
 
