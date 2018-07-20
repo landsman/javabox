@@ -10,7 +10,9 @@ fi
 xhost +
 
 # make cache dir
-mkdir ~/.javabox
+if [ ! -f "~/.javabox" ]; then
+	mkdir ~/.javabox
+fi
 
 # run docker on background
 docker-compose up -d

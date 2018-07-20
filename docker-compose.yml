@@ -5,7 +5,7 @@ services:
     container_name: sandbox
     build:
       context: .
-      dockerfile: Dockerfile-javabox
+      dockerfile: Dockerfile
     environment:
       - DISPLAY=$DISPLAY
       - PROJECTS=$PROJECTS

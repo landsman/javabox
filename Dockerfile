@@ -40,9 +40,9 @@ RUN cd "/tmp" && \
     wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
     tar xzf sbt.tgz && \
     mkdir "${SBT_HOME}" && \
-    mv sbt "${SBT_HOME}" && \
+    mv sbt/* "${SBT_HOME}" && \
     ln -s "${SBT_HOME}/bin/"* "/usr/bin/" && \
-    sbt sbt-version || sbt sbtVersion || true
+    sbt sbt-version || sbt sbtVersion
 
 # maven
 RUN cd "/tmp" && \
