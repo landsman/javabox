@@ -1,5 +1,7 @@
 FROM openjdk:8-jdk-alpine
 
+RUN java -version
+
 # Make ssh dir
 RUN mkdir /root/.ssh/
 
@@ -7,7 +9,7 @@ RUN mkdir /root/.ssh/
 RUN apk --update add --no-cache ttf-dejavu
 
 # setup
-ENV IDEA_VERSION="2018.1.5"
+ENV IDEA_VERSION="2018.1.6"
 
 ENV SCALA_VERSION="2.11.8"
 ENV SBT_VERSION="0.13.12"
@@ -20,6 +22,7 @@ ENV PATH $MAVEN_HOME/bin:$PATH
 
 # wget, bash, git, vim
 RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
+    apk add --no-cache curl && \
     apk add --no-cache bash && \
     apk add --no-cache git && \
     apk add --no-cache vim

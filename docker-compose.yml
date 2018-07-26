@@ -15,7 +15,7 @@ services:
       - ~/.gitconfig:/root/.gitconfig
       - ./config:$APP_ROOT/config
       - $PROJECTS:/root/projects
-      - idea_cache:/root/.IdeaIC2018.5
+      - idea_cache:/root/.IdeaIC2018.6
       - java_cache:/root/.java
     working_dir: $APP_ROOT
     command: /usr/share/intellij/bin/idea.sh
