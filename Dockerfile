@@ -44,7 +44,7 @@ RUN cd "/tmp" && \
     tar xzf sbt.tgz && \
     mkdir "${SBT_HOME}" && \
     mv sbt/* "${SBT_HOME}" && \
-    ln -s "${SBT_HOME}/bin/"* "/usr/bin/" && \
+    ln -s "${SBT_HOME}/sbt/bin/*" "/usr/bin/" && \
     sbt sbt-version || sbt sbtVersion
 
 # maven
