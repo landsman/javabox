@@ -21,16 +21,21 @@ ENV MAVEN_VERSION 3.5.3
 ENV MAVEN_HOME /usr/lib/mvn
 ENV PATH $MAVEN_HOME/bin:$PATH
 
+#
 # wget, bash, git, vim
+#
 RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
     apk add --no-cache curl && \
     apk add --no-cache bash && \
     apk add --no-cache git && \
     apk add --no-cache vim
 
+WORKDIR /tmp
+
+#
 # scala
-RUN cd "/tmp" && \
-    wget "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" && \
+#
+RUN wget "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" && \
     tar xzf "scala-${SCALA_VERSION}.tgz" && \
     mkdir "${SCALA_HOME}" && \
     rm "/tmp/scala-${SCALA_VERSION}/bin/"*.bat && \
@@ -39,68 +44,162 @@ RUN cd "/tmp" && \
     scala -version && \
     scalac -version
 
+#
 # sbt
-RUN cd "/tmp" && \
-    wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
+#
+RUN wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
     tar xzf sbt.tgz && \
-    mkdir "${SBT_HOME}" && \
-    mv sbt/* "${SBT_HOME}" && \
-    ln -s "${SBT_HOME}/sbt/bin/*" "/usr/bin/" && \
-    sbt sbt-version || sbt sbtVersion
+    ls -la && \
+    mkdir "${SBT_HOME}" && rm "sbt/bin/"*.bat && mv sbt/* "${SBT_HOME}/" 
+    #&& \
+    #ln -s "${SBT_HOME}/sbt/bin/*" "/usr/bin/" && \
+    #ls -lad "${SBT_HOME}/*" && \
+    #ls -la -d /usr/bin/* && \
+    #sbt sbt-version || sbt sbtVersion
 
+#
 # maven
-RUN cd "/tmp" && \
-    wget -O maven.tar.gz http://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
+#
+RUN wget -O maven.tar.gz http://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz && \
     tar -zxvf maven.tar.gz && \
     rm maven.tar.gz && \
     mv apache-maven-${MAVEN_VERSION} /usr/lib/mvn
 
+#
 # install intellij IDEA CE
-RUN cd "/tmp" && \
-    wget -O idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz && \
+#
+RUN wget -O idea.tar.gz https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz && \
     mkdir -p /usr/share/intellij && \
     tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
 
 #
-# intellij plugins:
+# intellij plugins - prepare folders before program will be installed
 #
+RUN mkdir "../root/.IdeaIC${IDEA_FOLDER}" && \
+    mkdir "../root/.IdeaIC${IDEA_FOLDER}/config" && \
+    mkdir "../root/.IdeaIC${IDEA_FOLDER}/config/plugins"
+
+#
+# Kotlin - https://plugins.jetbrains.com/plugin/6954-kotlin
+#
+RUN curl 'https://plugins.jetbrains.com/files/6954/47481/kotlin-plugin-1.2.51-release-Studio3.2-1.zip?updateId=47481&pluginId=6954' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/idea_kotlin.zip' \
+    --compressed && \
+    ls -la && \
+    pwd && \
+    unzip "/tmp/idea_kotlin.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/idea_kotlin.zip" && \
+    ls -la
+
+#
+# .ignore - https://plugins.jetbrains.com/plugin/7495--ignore
+#
+RUN curl 'https://plugins.jetbrains.com/files/7495/48036/idea-gitignore-3.0.0.141.zip?updateId=48036&pluginId=7495' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/idea_gitignore.zip' \
+    --compressed && \
+    ls -la && \
+    pwd && \
+    unzip "/tmp/idea_gitignore.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/idea_gitignore.zip" && \
+    ls -la
 
 #
 # Scala (2018.2.8) - https://plugins.jetbrains.com/plugin/1347-scala
 #
-RUN cd "~/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
-    wget -O scala.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=48043 && \
-    unzip scala.zip && rm scala.zip
+RUN curl 'https://plugins.jetbrains.com/files/1347/48043/scala-intellij-bin-2018.2.8.zip?updateId=48043&pluginId=1347' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/idea_scala.zip' \
+    --compressed && \
+    ls -la && \
+    pwd && \  
+    unzip "/tmp/idea_scala.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/idea_scala.zip" && \
+    ls -la
 
 #
 # Markdown support (182.2371) - https://plugins.jetbrains.com/plugin/7793-markdown-support
 # Markdown navigator (2.5.4) - https://plugins.jetbrains.com/plugin/7896-markdown-navigator
 # Gauge (0.3.11) - https://plugins.jetbrains.com/plugin/7535-gauge
 #
-RUN cd "~/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
-    wget -O md_support.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=45898 && \
-    unzip md_support.zip && rm md_support.zip && \
-    wget -O md_navigator.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=46921 && \
-    unzip md_navigator.zip && rm md_navigator.zip && \
-    wget -O gauge.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=44726 && \
-    unzip gauge.zip && rm gauge.zip
+RUN ls -la && \
+    curl 'https://plugins.jetbrains.com/files/7793/45898/markdown-182.2371.zip?updateId=45898&pluginId=7793' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/md_support.zip' \
+    --compressed && \
+    curl 'https://plugins.jetbrains.com/files/7896/46921/idea-multimarkdown.2.5.4.zip?updateId=46921&pluginId=7896' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/md_navigator.zip' \
+    --compressed && \
+    curl 'https://plugins.jetbrains.com/files/7535/44726/Gauge-Java-Intellij-0.3.11.zip?updateId=44726&pluginId=7535' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/gauge.zip' \
+    --compressed && \
+    ls -la && \
+    unzip "/tmp/md_support.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/md_support.zip" && \
+    unzip "/tmp/md_navigator.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/md_navigator.zip" && \
+    unzip "/tmp/gauge.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/gauge.zip"
 
 #
 # BashSupport (1.6.13.182) - https://plugins.jetbrains.com/plugin/4230-bashsupport
 #
-RUN cd "~/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
-    wget -O bash.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=46357 && \
-    unzip bash.zip && rm bash.zip
+RUN curl 'https://plugins.jetbrains.com/files/4230/46357/BashSupport-1.6.13.182.zip?updateId=46357&pluginId=4230' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/bash.zip' \
+    --compressed && \
+    unzip "/tmp/bash.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/bash.zip"
 
 #
 # Maven helper (3.7.172.1454.3) - https://plugins.jetbrains.com/plugin/7179-maven-helper
 #
-RUN cd "~/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
-    wget -O maven.zip https://plugins.jetbrains.com/plugin/download?rel=true&updateId=46909 && \
-    unzip maven.zip && rm maven.zip
-
-
-
-# clean up
-#RUN apk del .build-dependencies && \
-#    rm -rf "/tmp/"*
+RUN curl 'https://plugins.jetbrains.com/files/7179/46909/MavenRunHelper.zip?updateId=46909&pluginId=7179' \
+        -H 'authority: plugins.jetbrains.com' \
+        -H 'upgrade-insecure-requests: 1' \
+        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
+        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+        -H 'accept-encoding: gzip, deflate, br' \
+        -H 'cookie: ccc=s6e5bi' \
+    --output '/tmp/maven.zip' \
+    --compressed && \
+    unzip "/tmp/maven.zip" -q -d "../root/.IdeaIC${IDEA_FOLDER}/config/plugins" && \
+    rm "/tmp/maven.zip"
