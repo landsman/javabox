@@ -10,7 +10,7 @@ RUN apk --update add --no-cache ttf-dejavu
 
 # setup
 ENV IDEA_VERSION="2018.1.6"
-ENV IDEA_VERSION_FOLDER="2018.6"
+ENV IDEA_VERSION_FOLDER="2018.1"
 ENV IDEA_PLUGINS="../root/.IdeaIC${IDEA_VERSION_FOLDER}/config/plugins"
 
 ENV SCALA_VERSION="2.11.8"
@@ -51,12 +51,9 @@ RUN wget -O scala.tgz "https://downloads.typesafe.com/scala/${SCALA_VERSION}/sca
 RUN wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
     tar xzf sbt.tgz && \
     ls -la && \
-    mkdir "${SBT_HOME}" && rm "sbt/bin/"*.bat && mv sbt/* "${SBT_HOME}/"
-    # && \
-    #ln -s "${SBT_HOME}/sbt/bin/*" "/usr/bin/" && \
-    #ls -lad "${SBT_HOME}/*" && \
-    #ls -la -d /usr/bin/* && \
-    #sbt sbt-version || sbt sbtVersion
+    mkdir "${SBT_HOME}" && mv sbt/* "${SBT_HOME}/" && \
+    ln -s "${SBT_HOME}/bin/sbt" "/usr/bin/sbt" && \
+    sbt sbt-version || sbt sbtVersion
 
 #
 # maven
