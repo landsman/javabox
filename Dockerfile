@@ -9,8 +9,8 @@ RUN mkdir /root/.ssh/
 RUN apk --update add --no-cache ttf-dejavu
 
 # setup
-ENV IDEA_VERSION="2018.1.6"
-ENV IDEA_VERSION_FOLDER="2018.1"
+ENV IDEA_VERSION="2018.2"
+ENV IDEA_VERSION_FOLDER="2018.2"
 ENV IDEA_PLUGINS="../root/.IdeaIC${IDEA_VERSION_FOLDER}/config/plugins"
 
 ENV SCALA_VERSION="2.11.8"
@@ -50,7 +50,6 @@ RUN wget -O scala.tgz "https://downloads.typesafe.com/scala/${SCALA_VERSION}/sca
 #
 RUN wget -O sbt.tgz http://dl.bintray.com/sbt/native-packages/sbt/${SBT_VERSION}/sbt-${SBT_VERSION}.tgz && \
     tar xzf sbt.tgz && \
-    ls -la && \
     mkdir "${SBT_HOME}" && mv sbt/* "${SBT_HOME}/" && \
     ln -s "${SBT_HOME}/bin/sbt" "/usr/bin/sbt" && \
     sbt sbt-version || sbt sbtVersion
@@ -133,11 +132,9 @@ RUN curl 'https://plugins.jetbrains.com/files/1347/48043/scala-intellij-bin-2018
 
 #
 # Markdown support (182.2371) - https://plugins.jetbrains.com/plugin/7793-markdown-support
-# Markdown navigator (2.5.4) - https://plugins.jetbrains.com/plugin/7896-markdown-navigator
 # Gauge (0.3.11) - https://plugins.jetbrains.com/plugin/7535-gauge
 #
-RUN ls -la && \
-    curl 'https://plugins.jetbrains.com/files/7793/45898/markdown-182.2371.zip?updateId=45898&pluginId=7793' \
+RUN curl 'https://plugins.jetbrains.com/files/7793/45898/markdown-182.2371.zip?updateId=45898&pluginId=7793' \
         -H 'authority: plugins.jetbrains.com' \
         -H 'upgrade-insecure-requests: 1' \
         -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
@@ -145,15 +142,6 @@ RUN ls -la && \
         -H 'accept-encoding: gzip, deflate, br' \
         -H 'cookie: ccc=s6e5bi' \
     --output 'md_support.zip' \
-    --compressed && \
-    curl 'https://plugins.jetbrains.com/files/7896/46921/idea-multimarkdown.2.5.4.zip?updateId=46921&pluginId=7896' \
-        -H 'authority: plugins.jetbrains.com' \
-        -H 'upgrade-insecure-requests: 1' \
-        -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
-        -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
-        -H 'accept-encoding: gzip, deflate, br' \
-        -H 'cookie: ccc=s6e5bi' \
-    --output 'md_navigator.zip' \
     --compressed && \
     curl 'https://plugins.jetbrains.com/files/7535/44726/Gauge-Java-Intellij-0.3.11.zip?updateId=44726&pluginId=7535' \
         -H 'authority: plugins.jetbrains.com' \
@@ -164,11 +152,8 @@ RUN ls -la && \
         -H 'cookie: ccc=s6e5bi' \
     --output 'gauge.zip' \
     --compressed && \
-    ls -la && \
     unzip "md_support.zip" -q -d "${IDEA_PLUGINS}" && \
     rm "md_support.zip" && \
-    unzip "md_navigator.zip" -q -d "${IDEA_PLUGINS}" && \
-    rm "md_navigator.zip" && \
     unzip "gauge.zip" -q -d "${IDEA_PLUGINS}" && \
     rm "gauge.zip"
 
@@ -201,3 +186,8 @@ RUN curl 'https://plugins.jetbrains.com/files/7179/46909/MavenRunHelper.zip?upda
     --compressed && \
     unzip "maven.zip" -q -d "${IDEA_PLUGINS}" && \
     rm "maven.zip"
+
+#
+# for good rights - access to volumes
+#
+USER powerless
