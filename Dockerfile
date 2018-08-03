@@ -3,7 +3,8 @@ FROM openjdk:8-jdk-alpine
 RUN java -version
 
 # Make ssh dir
-RUN mkdir /root/.ssh/
+RUN mkdir /root/.ssh/ && \
+    chown root /root/.ssh/config
 
 # ttf-dejavu is required to render GUI under X11: https://github.com/docker-library/openjdk/issues/73
 RUN apk --update add --no-cache ttf-dejavu
@@ -28,6 +29,7 @@ ENV PATH $MAVEN_HOME/bin:$PATH
 RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
     apk add --no-cache curl && \
     apk add --no-cache bash && \
+    apk add --no-cache openssh && \
     apk add --no-cache git && \
     apk add --no-cache vim
 
