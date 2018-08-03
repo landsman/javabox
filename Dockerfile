@@ -3,8 +3,7 @@ FROM openjdk:8-jdk-alpine
 RUN java -version
 
 # Make ssh dir
-RUN mkdir /root/.ssh/ && \
-    chown root /root/.ssh/config
+RUN mkdir /root/.ssh/
 
 # ttf-dejavu is required to render GUI under X11: https://github.com/docker-library/openjdk/issues/73
 RUN apk --update add --no-cache ttf-dejavu
@@ -34,6 +33,14 @@ RUN apk add --no-cache --virtual=.build-dependencies wget ca-certificates && \
     apk add --no-cache vim
 
 WORKDIR "/tmp"
+
+#
+# install javafx for openjdk
+# see: https://github.com/docker-library/openjdk/issues/53
+#
+RUN wget --quiet --output-document=/etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
+    wget https://github.com/sgerrand/alpine-pkg-java-openjfx/releases/download/8.151.12-r0/java-openjfx-8.151.12-r0.apk && \
+    apk add --no-cache java-openjfx-8.151.12-r0.apk
 
 #
 # scala
@@ -191,5 +198,5 @@ RUN curl 'https://plugins.jetbrains.com/files/7179/46909/MavenRunHelper.zip?upda
 
 #
 # for good rights - access to volumes
-#
-USER powerless
+#USER powerless
+#    chown root /root/.ssh/config
