@@ -43,6 +43,11 @@ RUN wget --quiet --output-document=/etc/apk/keys/sgerrand.rsa.pub https://alpine
     apk add --no-cache java-openjfx-8.151.12-r0.apk
 
 #
+# fix javadoc, problem not globally available
+#
+RUN ln -s /usr/lib/jvm/java-1.8-openjdk/bin/javadoc /usr/bin/javadoc
+
+#
 # scala
 #
 RUN wget -O scala.tgz "https://downloads.typesafe.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz" && \
