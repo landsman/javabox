@@ -1,10 +1,17 @@
-version: '3'
+version: "3"
 
 services:
   javabox:
     container_name: sandbox
     build:
-      context: .
+      context: "."
+      args:
+        IDEA_LICENSE: $IDEA_LICENSE
+        IDEA_VERSION: $IDEA_VERSION
+        IDEA_VERSION_FOLDER: $IDEA_VERSION_FOLDER
+        MAVEN_VERSION: $MAVEN_VERSION
+        SBT_VERSION: $SBT_VERSION
+        SCALA_VERSION: $SCALA_VERSION
       dockerfile: Dockerfile
     environment:
       - DISPLAY=$DISPLAY
