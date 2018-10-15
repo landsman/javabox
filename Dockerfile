@@ -9,17 +9,20 @@ RUN mkdir /root/.ssh/
 RUN apk --update add --no-cache ttf-dejavu
 
 # setup
-ENV IDEA_VERSION="2018.2"
-ENV IDEA_VERSION_FOLDER="2018.2"
+ARG IDEA_LICENSE
+ARG IDEA_VERSION
+ARG IDEA_VERSION_FOLDER
 ENV IDEA_PLUGINS="../root/.IdeaIC${IDEA_VERSION_FOLDER}/config/plugins"
 
-ENV SCALA_VERSION="2.11.8"
-ENV SBT_VERSION="0.13.12"
+RUN echo $IDEA_LICENSE
+
+ARG SCALA_VERSION
+ARG SBT_VERSION
 ENV SCALA_HOME="/usr/share/scala"
 ENV SBT_HOME="/usr/share/sbt"
 
-ENV MAVEN_VERSION 3.5.3
-ENV MAVEN_HOME /usr/lib/mvn
+ARG MAVEN_VERSION
+ENV MAVEN_HOME=/usr/lib/mvn
 ENV PATH $MAVEN_HOME/bin:$PATH
 
 #
@@ -46,6 +49,23 @@ RUN wget --quiet --output-document=/etc/apk/keys/sgerrand.rsa.pub https://alpine
 # fix javadoc, problem not globally available
 #
 RUN ln -s /usr/lib/jvm/java-1.8-openjdk/bin/javadoc /usr/bin/javadoc
+
+#
+# install intellij IDEA
+#
+RUN curl "https://download-cf.jetbrains.com/idea/ideaI${IDEA_LICENSE}-${IDEA_VERSION}-no-jdk.tar.gz" \
+    -H 'authority: plugins.jetbrains.com' \
+    -H 'upgrade-insecure-requests: 1' \
+    -H 'Referer: https://www.jetbrains.com/idea/download/download-thanks.html?platform=linuxWithoutJDK' \
+    -H 'User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:62.0) Gecko/20100101 Firefox/62.0' \
+    -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
+    -H 'accept-encoding: gzip, deflate, br' \
+    -H 'cookie: ccc=s6e5bi' \
+    -H 'Connection: keep-alive' \
+    --output "idea.tar.gz" \
+    --compressed && \
+    mkdir -p /usr/share/intellij && \
+    tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
 
 #
 # scala
@@ -76,20 +96,6 @@ RUN wget -O maven.tar.gz http://archive.apache.org/dist/maven/maven-3/${MAVEN_VE
     rm maven.tar.gz && \
     mv apache-maven-${MAVEN_VERSION} /usr/lib/mvn
 
-#
-# install intellij IDEA CE
-#
-RUN curl "https://download-cf.jetbrains.com/idea/ideaIC-${IDEA_VERSION}.tar.gz" \
-    -H 'authority: plugins.jetbrains.com' \
-    -H 'upgrade-insecure-requests: 1' \
-    -H 'user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.75 Safari/537.36' \
-    -H 'accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8' \
-    -H 'accept-encoding: gzip, deflate, br' \
-    -H 'cookie: ccc=s6e5bi' \
-    --output "idea.tar.gz" \
-    --compressed && \
-    mkdir -p /usr/share/intellij && \
-    tar -xf idea.tar.gz --strip-components=1 -C /usr/share/intellij
 
 #
 # intellij plugins - prepare folders before program will be installed
@@ -200,7 +206,7 @@ RUN curl 'https://plugins.jetbrains.com/files/7179/46909/MavenRunHelper.zip?upda
     --compressed && \
     unzip "maven.zip" -q -d "${IDEA_PLUGINS}" && \
     rm "maven.zip"
-
+    
 #
 # for good rights - access to volumes
 #USER powerless
