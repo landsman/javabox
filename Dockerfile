@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM openjdk:15-jdk-alpine
 
 RUN java -version
 
